@@ -501,7 +501,7 @@ function shareRecipe(recipeId) {
     
     if (navigator.share) {
         navigator.share({
-            title: `${recipe.name} - SweetCraft AI`,
+            title: `${recipe.name} - 小包焙`,
             text: shareText,
             url: window.location.href
         });
