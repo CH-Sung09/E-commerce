@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SweetCraft AI - 智能甜點DIY平台</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">🍰 SweetCraft AI</div>
+            <ul class="nav-links">
+                <li><a href="#features">功能特色</a></li>
+                <li><a href="#pricing">方案價格</a></li>
+                <li><a href="recommendation.html">智能推薦</a></li>
+                <li><a href="#about">關於我們</a></li>
+            </ul>
+            <div class="user-actions">
+                <div id="userInfo" class="user-info" style="display: none;">
+                    <span id="userName"></span>
+                    <span id="userPlan" class="user-plan"></span>
+                    <button class="logout-btn" onclick="logout()">登出</button>
+                </div>
+                <button id="loginBtn" class="login-btn" onclick="openModal('loginModal')">登入 / 註冊</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>讓烘焙變簡單<br>AI陪你做甜點</h1>
+            <p>智能推薦 × 個人化配方 × AR教學<br>零失敗保證，每次都成功！</p>
+            <button class="cta-button" onclick="window.location.href='recommendation.html'">開始智能推薦</button>
+            <button class="cta-button secondary" onclick="openModal('registerModal')">立即註冊</button>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">六大核心價值</h2>
+            <div class="features-grid">
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔬</div>
+                    <h3>精準小份量</h3>
+                    <p>1-2人份精確配比，零浪費環保設計</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>食安保障</h3>
+                    <p>原材料SGS認證，安心製作品質保證</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3>驚喜材料包</h3>
+                    <p>每月驚喜包+新食譜，讓烘焙更有趣</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>便利性至上</h3>
+                    <p>一站購足+快速配送，輕鬆享受烘焙樂趣</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤝</div>
+                    <h3>社群互動</h3>
+                    <p>分享作品、交流心得，烘焙不孤單</p>
+            </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <h3>智能推薦</h3>
+                    <p>AI個人化配方，根據口味和需求調整</p>
+                </div>
+        </div>
+    </section>
+
+    <!-- Recipe Preview -->
+    <section class="recipe-preview">
+        <div class="container">
+            <h2 class="section-title">精選食譜</h2>
+            <div id="recipeGrid" class="recipe-grid">
+                <!-- Recipes will be loaded by JavaScript -->
+            </div>
+            <div class="text-center">
+                <button class="cta-button" onclick="window.location.href='recommendation.html'">
+                    查看更多食譜
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section-title">選擇最適合你的方案</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>免費會員</h3>
+                    <div class="price">NT$0</div>
+                    <ul class="pricing-features">
+                        <li>✅ 智能推薦系統</li>
+                        <li>✅ 查看基礎食譜</li>
+                        <li>✅ 1次AI配方調整</li>
+                        <li>✅ 社群互動</li>
+                        <li>❌ 無限配方調整</li>
+                        <li>❌ 每月驚喜包</li>
+                    </ul>
+                    <button class="cta-button" onclick="openModal('registerModal')">免費註冊</button>
+                </div>
+                <div class="pricing-card popular">
+                    <h3>Plus會員</h3>
+                    <div class="price">NT$69<span>/月</span></div>
+                    <ul class="pricing-features">
+                        <li>✅ 免費會員所有功能</li>
+                        <li>✅ 無限次AI配方調整</li>
+                        <li>✅ 專屬客服支援</li>
+                        <li>✅ 會員限定食譜</li>
+                        <li>❌ 每月驚喜包</li>
+                        <li>❌ 食譜投票權</li>
+                    </ul>
+                    <button class="cta-button" onclick="upgradePlan('plus')">升級Plus</button>
+                </div>
+                <div class="pricing-card premium">
+                    <h3>Pro會員</h3>
+                    <div class="price">NT$499<span>/月</span></div>
+                    <ul class="pricing-features">
+                        <li>✅ Plus會員所有功能</li>
+                        <li>✅ 每月驚喜材料包</li>
+                        <li>✅ 新增食譜投票權</li>
+                        <li>✅ 專家線上諮詢</li>
+                        <li>✅ 優先客服支援</li>
+                        <li>✅ 獨家活動邀請</li>
+                    </ul>
+                    <button class="cta-button" onclick="upgradePlan('pro')">升級Pro</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2>會員登入</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">電子郵件</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">密碼</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="cta-button full-width">登入</button>
+            </form>
+            <p class="text-center">
+                還沒有帳號？<a href="#" onclick="closeModal('loginModal'); openModal('registerModal');">立即註冊</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h2>會員註冊</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regName">姓名</label>
+                    <input type="text" id="regName" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">電子郵件</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">密碼</label>
+                    <input type="password" id="regPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="experience">烘焙經驗</label>
+                    <select id="experience">
+                        <option value="beginner">完全新手</option>
+                        <option value="some">略有經驗</option>
+                        <option value="intermediate">有一定基礎</option>
+                        <option value="advanced">資深愛好者</option>
+                    </select>
+                </div>
+                <button type="submit" class="cta-button full-width">註冊</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Recipe Detail Modal -->
+    <div id="recipeModal" class="modal">
+        <div class="modal-content large">
+            <span class="close" onclick="closeModal('recipeModal')">&times;</span>
+            <div id="recipeContent"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能推薦系統 - SweetCraft AI</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .recommendation-hero {
+            background: linear-gradient(135deg, #d4c5a9 0%, #b8a082 50%, #a0845c 100%);
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            color: white;
+        }
+
+        .recommendation-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, #f4e5d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .main-content {
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .filter-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .ai-status {
+            background: linear-gradient(145deg, #fff, #f0f0f0);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .ai-status.processing {
+            background: linear-gradient(145deg, #8b4513, #a0845c);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #8b4513, #a0845c);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .filter-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .filter-group h4 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .option-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .option-tag {
+            background: #f0f0f0;
+            color: #666;
+            padding: 0.7rem 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-tag::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .option-tag:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .option-tag.selected {
+            background: #ff6b6b;
+            color: white;
+            border-color: #ff6b6b;
+            transform: translateY(-2px);
+        }
+
+        .option-tag.selected::before {
+            left: 0;
+        }
+
+        .option-tag.allergen.selected {
+            background: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .option-tag.alcohol.selected {
+            background: #6f42c1;
+            border-color: #6f42c1;
+        }
+
+        .generate-section {
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .generate-btn {
+            background: linear-gradient(45deg, #8b4513, #a0845c);
+            color: white;
+            padding: 1.5rem 3rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(139, 69, 19, 0.4);
+        }
+
+        .generate-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-section {
+            display: none;
+            margin-top: 3rem;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .results-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #8b4513;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 20px;
+            color: #666;
+        }
+
+        .filter-summary {
+            background: linear-gradient(145deg, #e3f2fd, #f3e5f5);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .filter-summary h4 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .selected-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .selected-filter {
+            background: #8b4513;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .remove-filter {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .recommendation-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-stats {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">🍰 SweetCraft AI</div>
+            <ul class="nav-links">
+                <li><a href="index.html">首頁</a></li>
+                <li><a href="#features">功能特色</a></li>
+                <li><a href="#pricing">方案價格</a></li>
+                <li><a href="recommendation.html">智能推薦</a></li>
+            </ul>
+            <div class="user-actions">
+                <div id="userInfo" class="user-info" style="display: none;">
+                    <span id="userName"></span>
+                    <span id="userPlan" class="user-plan"></span>
+                    <button class="logout-btn" onclick="logout()">登出</button>
+                </div>
+                <button id="loginBtn" class="login-btn" onclick="openModal('loginModal')">登入 / 註冊</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="recommendation-hero">
+        <h1>🤖 AI智能推薦系統</h1>
+        <p>告訴我們你的喜好，AI為你找到完美的甜點配方</p>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="filter-container">
+            <!-- AI Status -->
+            <div id="aiStatus" class="ai-status">
+                <h3>🎯 設定你的偏好，開始智能推薦</h3>
+                <p>選擇你喜歡的甜度、口感、類型等條件，AI會為你推薦最適合的食譜</p>
+                <div class="progress-bar" style="display: none;">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- Filter Summary -->
+            <div id="filterSummary" class="filter-summary" style="display: none;">
+                <h4>📋 已選擇的條件</h4>
+                <div class="selected-filters" id="selectedFilters"></div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-section">
+                <h3 style="text-align: center; margin-bottom: 2rem; color: #333;">🎨 客製化你的甜點偏好</h3>
+                <div class="filter-grid">
+                    <!-- 甜度 -->
+                    <div class="filter-group">
+                        <h4>🍯 甜度偏好</h4>
+                        <div class="option-tags">
+                            <div class="option-tag" data-filter="sweetness" data-value="清淡">清淡甜味</div>
+                            <div class="option-tag" data-filter="sweetness" data-value="微甜">微甜怡人</div>
+                            <div class="option-tag" data-filter="sweetness" data-value="中甜">標準甜度</div>
+                            <div class="option-tag" data-filter="sweetness" data-value="高甜">濃郁甜味</div>
+                        </div>
+                    </div>
+
+                    <!-- 難度 -->
+                    <div class="filter-group">
+                        <h4>⭐ 製作難度</h4>
+                        <div class="option-tags">
+                            <div class="option-tag" data-filter="difficulty" data-value="簡單">新手友善</div>
+                            <div class="option-tag" data-filter="difficulty" data-value="中等">適中挑戰</div>
+                            <div class="option-tag" data-filter="difficulty" data-value="困難">進階挑戰</div>
+                        </div>
+                    </div>
+
+                    <!-- 類型 -->
+                    <div class="filter-group">
+                        <h4>🧁 甜點類型</h4>
+                        <div class="option-tags">
+                            <div class="option-tag" data-filter="category" data-value="餅乾">餅乾</div>
+                            <div class="option-tag" data-filter="category" data-value="蛋糕">蛋糕</div>
+                            <div class="option-tag" data-filter="category" data-value="慕斯">慕斯</div>
+                            <div class="option-tag" data-filter="category" data-value="布丁">布丁</div>
+                            <div class="option-tag" data-filter="category" data-value="塔">塔類</div>
+                            <div class="option-tag" data-filter="category" data-value="司康">司康</div>
+                            <div class="option-tag" data-filter="category" data-value="馬卡龍">馬卡龍</div>
+                            <div class="option-tag" data-filter="category" data-value="舒芙蕾">舒芙蕾</div>
+                        </div>
+                    </div>
+
+                    <!-- 口感 -->
+                    <div class="filter-group">
+                        <h4>😋 口感偏好</h4>
+                        <div class="option-tags">
+                            <div class="option-tag" data-filter="texture" data-value="酥脆">酥脆</div>
+                            <div class="option-tag" data-filter="texture" data-value="鬆軟">鬆軟</div>
+                            <div class="option-tag" data-filter="texture" data-value="綿密">綿密</div>
+                            <div class="option-tag" data-filter="texture" data-value="滑嫩">滑嫩</div>
+                            <div class="option-tag" data-filter="texture" data-value="輕盈">輕盈</div>
+                            <div class="option-tag" data-filter="texture" data-value="外酥內軟">外酥內軟</div>
+                            <div class="option-tag" data-filter="texture" data-value="層次豐富">層次豐富</div>
+                            <div class="option-tag" data-filter="texture" data-value="外固內流">外固內流</div>
+                        </div>
+                    </div>
+
+                    <!-- 酒精 -->
+                    <div class="filter-group">
+                        <h4>🍷 酒精偏好</h4>
+                        <div class="option-tags">
+                            <div class="option-tag alcohol" data-filter="alcohol" data-value="false">無酒精</div>
+                            <div class="option-tag alcohol" data-filter="alcohol" data-value="true">含酒精OK</div>
+                        </div>
+                    </div>
+
+                    <!-- 過敏原 -->
+                    <div class="filter-group">
+                        <h4>⚠️ 需要避免的過敏原</h4>
+                        <div class="option-tags">
+                            <div class="option-tag allergen" data-filter="allergens" data-value="麩質">麩質</div>
+                            <div class="option-tag allergen" data-filter="allergens" data-value="乳製品">乳製品</div>
+                            <div class="option-tag allergen" data-filter="allergens" data-value="蛋">雞蛋</div>
+                            <div class="option-tag allergen" data-filter="allergens" data-value="堅果">堅果</div>
+                            <div class="option-tag allergen" data-filter="allergens" data-value="大豆">大豆</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generate Button -->
+            <div class="generate-section">
+                <button id="generateBtn" class="generate-btn" onclick="generateRecommendations()">
+                    🎯 開始AI智能推薦
+                </button>
+                <p style="margin-top: 1rem; color: #666;">
+                    💡 未登入用戶可查看推薦結果，登入後可查看完整食譜內容
+                </p>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="results-section">
+                <div class="results-header">
+                    <h2>🌟 AI為你推薦</h2>
+                    <p>基於你的偏好，以下是最適合的甜點配方</p>
+                </div>
+
+                <div class="results-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalResults">0</div>
+                        <div class="stat-label">找到配方</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="avgTime">0</div>
+                        <div class="stat-label">平均時間(分鐘)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="avgPrice">0</div>
+                        <div class="stat-label">平均價格(元)</div>
+                    </div>
+                </div>
+
+                <div id="recommendationResults" class="recipe-grid">
+                    <!-- Results will be inserted here -->
+                </div>
+
+                <div id="noResults" class="no-results" style="display: none;">
+                    <h3>😅 找不到符合條件的食譜</h3>
+                    <p>試試調整一下條件，或者告訴我們你想要的食譜類型，我們會優先開發！</p>
+                    <button class="cta-button" onclick="resetFilters()">重新設定條件</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals (same as main page) -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2>會員登入</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">電子郵件</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">密碼</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="cta-button full-width">登入</button>
+            </form>
+            <p class="text-center">
+                還沒有帳號？<a href="#" onclick="closeModal('loginModal'); openModal('registerModal');">立即註冊</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h2>會員註冊</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regName">姓名</label>
+                    <input type="text" id="regName" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">電子郵件</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">密碼</label>
+                    <input type="password" id="regPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="experience">烘焙經驗</label>
+                    <select id="experience">
+                        <option value="beginner">完全新手</option>
+                        <option value="some">略有經驗</option>
+                        <option value="intermediate">有一定基礎</option>
+                        <option value="advanced">資深愛好者</option>
+                    </select>
+                </div>
+                <button type="submit" class="cta-button full-width">註冊</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Recipe Detail Modal -->
+    <div id="recipeModal" class="modal">
+        <div class="modal-content large">
+            <span class="close" onclick="closeModal('recipeModal')">&times;</span>
+            <div id="recipeContent"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="recommendation.js"></script>
+</body>
+</html>
